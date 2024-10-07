@@ -6,7 +6,8 @@
 API Documentation
 -----------------
 
+:automodule: tslist
+
 .. toctree::
     :glob:
 
-    ./api/modules.rst

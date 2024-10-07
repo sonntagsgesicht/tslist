@@ -22,3 +22,6 @@ htmlcov/
 
 *.json
 *.zip
+my/
+dev.ipynb
+dev.py
