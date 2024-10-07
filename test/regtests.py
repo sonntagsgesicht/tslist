@@ -20,3 +20,6 @@ from regtest import RegressionTestCase
 
 class FirstRegTests(RegressionTestCase):
     compression = False
+
+    def test_ts(self):
+        self.assertAlmostRegressiveEqual(1)

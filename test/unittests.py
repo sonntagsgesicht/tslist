@@ -17,3 +17,6 @@ from unittest import TestCase
 class FirstUnitTests(TestCase):
     def setUp(self):
         pass
+
+    def test_ts(self):
+        self.assertEqual(1, 1)
