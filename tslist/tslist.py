@@ -9,6 +9,8 @@
 # Website:  https://github.com/sonntagsgesicht/tslist
 # License:  Apache License 2.0 (see LICENSE file)
 
+from warnings import warn
+
 from datetime import datetime as _datetime, date as _date
 from pprint import pformat
 from typing import Callable, Any as DateType
@@ -16,7 +18,11 @@ from typing import Callable, Any as DateType
 try:
     from dateutil.parser import parse
 except ImportError:
+    msg = ("dateutil not found. consider 'pip install python-dateutil' "
+           "for more flexible datetime parsing")
+    warn(msg)
     parse = (lambda x: _datetime.fromisoformat(repr(x)))
+
 
 
 def ts(value: DateType, cls: Callable | None = None):
