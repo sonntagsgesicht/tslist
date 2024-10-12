@@ -6,8 +6,14 @@
 API Documentation
 -----------------
 
-:automodule: tslist
+.. autoclass:: TS
+    :inherited-members:
+
+.. autoclass:: TSDiff
+    :inherited-members:
+
+.. autoclass:: TSList
+    :inherited-members:
 
 .. toctree::
     :glob:
-
