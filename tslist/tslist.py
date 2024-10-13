@@ -5,7 +5,7 @@
 # timestamp with a list (created by auxilium)
 #
 # Author:   sonntagsgesicht
-# Version:  0.1.1, copyright Monday, 07 October 2024
+# Version:  0.1.2, copyright Friday, 11 October 2024
 # Website:  https://github.com/sonntagsgesicht/tslist
 # License:  Apache License 2.0 (see LICENSE file)
 
@@ -70,18 +70,18 @@ class TSList(list):
         TSList([1.1, 1.1])
 
         This becomes even more handy if list items admit conversions.
-        
+
         >>> from datetime import timedelta, datetime
         >>> from tslist import TS
-        
-        >>> class Timedelta(timedelta): 
+
+        >>> class Timedelta(timedelta):
         ...     def __float__(self):
         ...         return self.total_seconds()
         ...
         ...     def __ts__(self):
         ...         # used for conversion using tslist.TS
         ...         return datetime(2000, 1, 1) + self
-        
+
         >>> l = [Timedelta(d) for d in range(10, 15)]
         >>> tsl = TSList(l)
         >>> tsl
@@ -95,7 +95,7 @@ class TSList(list):
 
         >>> list(map(float, tsl))
         [864000.0, 950400.0, 1036800.0, 1123200.0, 1209600.0]
-        
+
         >>> tsl[950400.:1209600.:2]
         TSList([Timedelta(days=11), Timedelta(days=13)])
 
@@ -104,9 +104,9 @@ class TSList(list):
 
         >>> tsl[TS(20000112):TS(20000114)]
         TSList([Timedelta(days=11), Timedelta(days=12)])
- 
-        See |TS()| for more detail on timestamp and datetime conversion. 
-        
+
+        See |TS()| for more detail on timestamp and datetime conversion.
+
         """  # noqa E501
         super().__init__(iterable)
 
