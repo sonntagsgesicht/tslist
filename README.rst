@@ -109,7 +109,7 @@ This becomes even more handy if list items admit conversions.
     >>> tsl[TS(20000112):TS(20000114)]
     TSList([Timedelta(days=11), Timedelta(days=12)])
 
-See |TS()| for more detail on timestamp and datetime conversion.
+See TS() for more detail on timestamp and datetime conversion.
 
 
 
