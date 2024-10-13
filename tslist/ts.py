@@ -21,8 +21,9 @@ class TS(datetime):
     __slots__ = ('_year', '_month', '_day', '_hour', '_minute', '_second',
                  '_microsecond', '_tzinfo', '_hashcode', '_fold')
 
-    _WARN = True
+    _WARN = False
     DEFAULT = None
+    """default datetime for |TS()|; if 'None' |TS()| returns current date and time"""  # noqa F401
 
     def __new__(cls,
                 year: date | datetime | str | int | float | None = None,
@@ -34,8 +35,8 @@ class TS(datetime):
 
         :param year: (date, datetime, str, int, float or None)
             year of date or some value to parse the whole date.
-            If **None** **year** is replaces by |TS.DEFAULT|,
-            and if |TS.DEFAULT| is **None** |TS.now()| is retruned.
+            If **year** is **None** it is replaces by |TS.DEFAULT|,
+            and if |TS.DEFAULT| is **None** `TS.now()` is returned.
             (optional: default is **None**)
         :param month: (int or None)
         :param day: (int or None)
@@ -45,6 +46,30 @@ class TS(datetime):
         :param microsecond: (int)
         :param tzinfo: (tzinfo)
         :param fold: (int)
+
+        |TS()| differs from datetime only by
+        creating, conversion and representation.
+
+        >>> from tslist import TS
+        >>> TS.DEFAULT = 20201012
+        >>> TS()
+        TS(20201012)
+
+        >>> TS('20201013')
+        TS(20201013)
+
+        >>> int(TS(20201013))
+        20201013
+
+        >>> TS(20201013.012345)
+        TS(20201013.012345)
+
+        >>> TS(20201013.012345).datetime()
+        datetime.datetime(2020, 10, 13, 1, 23, 45)
+
+        >>> TS(datetime(2020, 10, 13, 1, 23, 45))
+        TS(20201013.012345)
+
         """
         if cls._WARN:
             cls._WARN = False
@@ -63,13 +88,11 @@ class TS(datetime):
         return super().__new__(cls, year, month, day, hour, minute, second,
                                microsecond, tzinfo, fold=fold)
 
-    @classmethod
-    def now(cls, tz: tzinfo | None = None):
-        return super().now(tz)
-
-    @classmethod
-    def today(cls):
-        return super().today()
+    def datetime(self):
+        """timestamp as standard datetime.datetime()"""
+        return datetime(self.year, self.month, self.day,
+                        self.hour, self.minute, self.second,
+                        self.microsecond, self.tzinfo, fold=self.fold)
 
     def __repr__(self):
         cls = self.__class__.__name__
@@ -95,10 +118,10 @@ class TS(datetime):
     def __copy__(self):
         return self.__class__(self)
 
-    def __add__(self, other: timedelta):
+    def __add__(self, other):
         return super().__add__(other)
 
-    def __sub__(self, other: date | datetime | timedelta):
+    def __sub__(self, other):
         if isinstance(other, date):
             other = self.__class__(other)
             td = super().__sub__(other)

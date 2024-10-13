@@ -81,6 +81,31 @@ def parse_datetime(
 
 
 def parse_timedelta(item: str, with_months: bool | type = False):
+    """parsing string to timedelta
+
+    :param item: string to parse
+    :param with_months: subtype of 'timedelta' witch admits a 'month' argument
+    :return: timedelta or subtype of timedelta instance
+
+    >>> from tslist.parser import parse_timedelta
+
+    >>> parse_timedelta('1.3 days')
+    datetime.timedelta(days=1, seconds=25920)
+
+    >>> parse_timedelta('-1s4µs')
+    datetime.timedelta(days=-1, seconds=86399, microseconds=4)
+
+    >>> parse_timedelta('2 hours 4 Minutes 8 Sec')
+    datetime.timedelta(seconds=7448)
+
+    >>> parse_timedelta('2h4i8s')
+    datetime.timedelta(seconds=7448)
+
+    >>> with_months = lambda *_, months=0: print(timedelta(*_), months)
+    >>> parse_timedelta('1y 3quarters 1m', with_months=with_months)
+    0:00:00 22.0
+
+    """
     # can even parse strings
     # like '-2Y-4Q+5M' but also '0B', '-1Y2M3D' as well.
     item = item.lower()
@@ -95,6 +120,7 @@ def parse_timedelta(item: str, with_months: bool | type = False):
     item = item.replace('days', 'd')
     item = item.replace('hours', 'h')
     item = item.replace('minutes', 'i')
+    item = item.replace('min', 'i')
     item = item.replace('seconds', 's')
     item = item.replace('sec', 's')
     item = item.replace('microseconds', 'μ')
@@ -106,9 +132,9 @@ def parse_timedelta(item: str, with_months: bool | type = False):
             s, p = p.split(letter, 1)
             s = s[1:] if s.startswith('+') else s
             sgn, s = (-1, s[1:]) if s.startswith('-') else (1, s)
-            if not s.isdigit():
+            if not s.replace(".", "").isdigit():
                 raise ValueError(f"Unable to parse {s} in {p}")
-            return sgn * int(s), p
+            return sgn * float(s), p
         return 0, p
 
     y, p = _parse(item, 'y')
@@ -122,10 +148,10 @@ def parse_timedelta(item: str, with_months: bool | type = False):
     mu, p = _parse(p, 'μ')
     if p:
         raise ValueError(f"Unable to parse {p!r}")
-    m = int(m) + 3 * int(q) + 12 * int(y)
-    s = (int(h) * 60 + int(i)) * 60 + int(s)
+    m = float(m) + 3 * float(q) + 12 * float(y)
+    s = (float(h) * 60 + float(i)) * 60 + float(s)
     if m:
         if not with_months:
             raise ValueError(f"found {m} months")
-        return with_months(int(d), s, int(mu), months=m)
-    return timedelta(int(d), s, int(mu))
+        return with_months(float(d), s, float(mu), months=m)
+    return timedelta(float(d), s, float(mu))

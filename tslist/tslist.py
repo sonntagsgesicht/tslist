@@ -43,21 +43,11 @@ class TSList(list):
 
         The TS filtered list enhances the standard
         `list <https://docs.python.org/3/library/stdtypes.html#list>`_
-        by mainly two features.
-
-            1. filtering the list by
-            `slices <https://docs.python.org/3/library/stdtypes.html#list>`_
-            of types **T** ´differing from **int**
-            in which (before comparision) any item **x**
-            is casted to type **T** by calling **T(x)**
-
-            2. distributive transfer of operations to the items,
-            i.e. :code:`[1, 2, 3] * 2` gives :code:`[2, 4, 6]`
-            rather than :code:`[1, 2, 3, 1, 2, 3]`. Same for operators
-            :code:`+, -, *, /, //, %` and :code:`@` as well as
-            :code:`abs` and even calling a list will invoke calling
-            all containing item.
-
+        by filtering the list by
+        `slices <https://docs.python.org/3/library/stdtypes.html#list>`_
+        of types **T** differing from **int**
+        in which (before comparision) any item **x**
+        is converted to type **T** by calling **T(x)**
 
         >>> from tslist import TSList
 
@@ -79,6 +69,44 @@ class TSList(list):
         >>> tsl[1.1]
         TSList([1.1, 1.1])
 
+        This becomes even more handy if list items admit conversions.
+        
+        >>> from datetime import timedelta, datetime
+        >>> from tslist import TS
+        
+        >>> class Timedelta(timedelta): 
+        ...     def __float__(self):
+        ...         return self.total_seconds()
+        ...
+        ...     def __ts__(self):
+        ...         # used for conversion using tslist.TS
+        ...         return datetime(2000, 1, 1) + self
+        
+        >>> l = [Timedelta(d) for d in range(10, 15)]
+        >>> tsl = TSList(l)
+        >>> tsl
+        TSList(
+        [ Timedelta(days=10),
+          Timedelta(days=11),
+          Timedelta(days=12),
+          Timedelta(days=13),
+          Timedelta(days=14)]
+        )
+
+        >>> list(map(float, tsl))
+        [864000.0, 950400.0, 1036800.0, 1123200.0, 1209600.0]
+        
+        >>> tsl[950400.:1209600.:2]
+        TSList([Timedelta(days=11), Timedelta(days=13)])
+
+        >>> list(map(TS, tsl))
+        [TS(20000111), TS(20000112), TS(20000113), TS(20000114), TS(20000115)]
+
+        >>> tsl[TS(20000112):TS(20000114)]
+        TSList([Timedelta(days=11), Timedelta(days=12)])
+ 
+        See |TS()| for more detail on timestamp and datetime conversion. 
+        
         """  # noqa E501
         super().__init__(iterable)
 
@@ -130,44 +158,3 @@ class TSList(list):
             return s
         s = pformat(list(self), indent=2, sort_dicts=False)
         return f"{c}(\n{s}\n)"
-
-    def __call__(self, *_, **__):
-        return self.__class__(v(*_, **__) for v in self)
-
-    def __neg__(self):
-        return self.__class__(v.__neg__() for v in self)
-
-    def __add__(self, other):
-        if isinstance(other, list):
-            return self.__class__(super().__add__(other))
-        return self.__class__(v.__add__(other) for v in self)
-
-    def __sub__(self, other):
-        if isinstance(other, list):
-            # lousy hack since other might just be list and not List
-            return self.__neg__().__add__(other).__neg__()
-        return self.__class__(v.__sub__(other) for v in self)
-
-    def __mul__(self, other):
-        return self.__class__(v.__mul__(other) for v in self)
-
-    def __truediv__(self, other):
-        return self.__class__(v.__truediv__(other) for v in self)
-
-    def __matmul__(self, other):
-        return self.__class__(v.__matmul__(other) for v in self)
-
-    def __abs__(self):
-        return self.__class__(v.__abs__() for v in self)
-
-    def __divmod__(self, other):
-        return self.__class__(v.__divmod__() for v in self)
-
-    def __mod__(self, other):
-        return self.__class__(v.__mod__() for v in self)
-
-    def __floordiv__(self, other):
-        return self.__class__(v.__floordiv__() for v in self)
-
-    def __invert__(self):
-        return self.__class__(v.__invert__() for v in self)

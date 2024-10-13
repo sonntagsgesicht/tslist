@@ -31,20 +31,55 @@ def actact(start: date, end: date):
 class TSDiff(timedelta):
     __slots__ = '_days', '_seconds', '_microseconds', '_hashcode', 'origin'
 
-    _WARN = True
+    _WARN = False
 
     def __new__(cls, days: int | str | timedelta = 0,
                 seconds: int = 0, microseconds: int = 0, milliseconds: int = 0,
                 minutes: int = 0, hours: int = 0, weeks: int = 0,
                 *, origin: date | datetime = None):
+        """enhanced timedelta object
+
+        :param days:
+        :param seconds:
+        :param microseconds:
+        :param milliseconds:
+        :param minutes:
+        :param hours:
+        :param weeks:
+        :param origin:
+
+        Enhances `timedelta <https://docs.python.org/3/library/datetime.html#timedelta-objects>`_
+        by additonal properts **origin** in order to recover difference
+        of creation as
+
+        >>> from tslist import TS, TSDiff
+        >>> tsdiff = TS(20211221) - TS(20211212)
+        >>> tsdiff
+        TSDiff('9d', origin=TS(20211212))
+
+        >>> tsdiff.origin
+        TS(20211212)
+
+        >>> tsdiff.origin + tsdiff
+        TS(20211221)
+
+        >>> tsdiff * 2
+        datetime.timedelta(days=18)
+
+        >>> tsdiff + tsdiff
+        datetime.timedelta(days=18)
+
+
+        """
         if cls._WARN:
             cls._WARN = False
             warn("TSDiff implementation is still experimental")
 
-        if isinstance(days, int):
+        if isinstance(days, (int, float)):
             new = super().__new__(cls, days, seconds, microseconds,
                                   milliseconds, minutes, hours, weeks)
             new.origin = origin
+            """TS diffrence origin"""
             return new
 
         if any((seconds, microseconds, milliseconds, minutes, hours, weeks)):
@@ -60,6 +95,7 @@ class TSDiff(timedelta):
         new = parse_timedelta(days)
         new = super().__new__(cls, new.days, new.seconds, new.microseconds)
         new.origin = origin
+        """TS diffrence origin"""
         return new
 
     def __float__(self):

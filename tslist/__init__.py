@@ -31,6 +31,9 @@ __data__ = ()
 __scripts__ = ()
 __theme__ = ''
 
+# todo:
+#  [ ] add tests and docs
+
 
 from .ts import TS  # noqa F401 E402
 from .tsdiff import TSDiff  # noqa F401 E402
