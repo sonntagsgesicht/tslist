@@ -37,7 +37,8 @@ except ImportError:
 
 def parse_datetime(
         item: object | str | int | float | date | datetime | None = None,
-        default: object | str | int | float | date | datetime | None = None):
+        default: object | str | int | float | date | datetime | None = None
+) -> datetime:
     if item is None:
         return datetime.now() if default is None else parse_datetime(default)
 
@@ -80,7 +81,9 @@ def parse_datetime(
     return parse(str(item))
 
 
-def parse_timedelta(item: str, with_months: bool | type = False):
+def parse_timedelta(
+        item: str, with_months: bool | type = False
+) -> timedelta:
     """parsing string to timedelta
 
     :param item: string to parse

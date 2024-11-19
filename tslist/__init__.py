@@ -22,7 +22,7 @@ __email__ = 'sonntagsgesicht@icloud.com'
 __url__ = 'https://github.com/sonntagsgesicht/tslist'
 
 __date__ = 'Sunday, 13 October 2024'
-__version__ = '0.1.2'
+__version__ = '0.2'
 __dev_status__ = '3 - Alpha'  # '4 - Beta'  or '5 - Production/Stable'
 
 __dependencies__ = ()
@@ -33,8 +33,13 @@ __theme__ = ''
 
 # todo:
 #  [ ] add tests and docs
+#  [ ] add TSDiff(years=1)
+#  [ ] add str operations TS() + '2d'
+#  [ ] add TSDiff.from_float(t, origin=None) like 'yieldcurves.inverse'
+#  [ ] add TSDict
 
 
 from .ts import TS  # noqa F401 E402
 from .tsdiff import TSDiff  # noqa F401 E402
+from .tsobj import TSObject  # noqa F401 E402
 from .tslist import TSList  # noqa F401 E402

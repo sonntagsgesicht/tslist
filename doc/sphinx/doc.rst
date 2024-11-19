@@ -21,6 +21,13 @@ TSDiff Class
 .. autoclass:: TSDiff
     :inherited-members:
 
+TSObject Class
+==============
+
+.. autoclass:: TSObject
+    :inherited-members:
+
+
 Parser Functions
 ================
 

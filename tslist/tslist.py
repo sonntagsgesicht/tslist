@@ -108,6 +108,7 @@ class TSList(list):
         See |TS()| for more detail on timestamp and datetime conversion.
 
         """  # noqa E501
+        # todo: what if iterable is dict {ts: obj}?
         super().__init__(iterable)
 
     def __getitem__(self, key):

@@ -5,7 +5,7 @@
 # timestamp with a list (created by auxilium)
 #
 # Author:   sonntagsgesicht
-# Version:  0.1.2, copyright Friday, 11 October 2024
+# Version:  0.1.2, copyright Sunday, 13 October 2024
 # Website:  https://github.com/sonntagsgesicht/tslist
 # License:  Apache License 2.0 (see LICENSE file)
 
@@ -26,7 +26,7 @@ class TS(datetime):
     """default datetime for |TS()|; if 'None' |TS()| returns current date and time"""  # noqa F401
 
     def __new__(cls,
-                year: date | datetime | str | int | float | None = None,
+                year: date | datetime | str | int | float | object | None = None,  # noqa E501
                 month: int | None = None, day: int | None = None,
                 hour: int = 0, minute: int = 0, second: int = 0,
                 microsecond: int = 0, tzinfo: tzinfo | None = None,
