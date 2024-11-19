@@ -5,7 +5,7 @@
 # timestamp with a list (created by auxilium)
 #
 # Author:   sonntagsgesicht
-# Version:  0.1.2, copyright Friday, 11 October 2024
+# Version:  0.1.2, copyright Sunday, 13 October 2024
 # Website:  https://github.com/sonntagsgesicht/tslist
 # License:  Apache License 2.0 (see LICENSE file)
 
