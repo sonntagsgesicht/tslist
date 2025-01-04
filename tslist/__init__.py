@@ -43,3 +43,4 @@ from .ts import TS  # noqa F401 E402
 from .tsdiff import TSDiff  # noqa F401 E402
 from .tsobj import TSObject  # noqa F401 E402
 from .tslist import TSList  # noqa F401 E402
+from .tsdict import TSDict  # noqa F401 E402

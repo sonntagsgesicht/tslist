@@ -44,7 +44,7 @@ class TSList(list):
         The TS filtered list enhances the standard
         `list <https://docs.python.org/3/library/stdtypes.html#list>`_
         by filtering the list by
-        `slices <https://docs.python.org/3/library/stdtypes.html#list>`_
+        `slices <https://docs.python.org/3/library/stdtypes.html#slices>`_
         of types **T** differing from **int**
         in which (before comparision) any item **x**
         is converted to type **T** by calling **T(x)**
