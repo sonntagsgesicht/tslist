@@ -2,10 +2,18 @@
 These changes are listed in decreasing version number order.
 
 
-Release 0.2
+Release 0.3
 -----------
 
 Release date was |today|
+
+* added |TSDict|
+
+
+Release 0.2
+-----------
+
+Release date was Tuesday, 19 November 2024
 
 * added |TSObject|
 

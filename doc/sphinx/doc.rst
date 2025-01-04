@@ -9,6 +9,10 @@ API Documentation
 .. autoclass:: TSList
     :inherited-members:
 
+.. autoclass:: TSDict
+    :inherited-members:
+
+
 TS Class
 ========
 
