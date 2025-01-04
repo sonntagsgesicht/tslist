@@ -12,8 +12,6 @@
 
 from pprint import pformat
 
-from jedi.inference.compiled.subprocess.functions import safe_literal_eval
-
 from .tslist import ts, TSList
 
 
@@ -145,7 +143,8 @@ class TSDict(dict):
 
         if key.start and key.stop:
             t_s, t_e = ts(key.start.__class__), ts(key.stop.__class__)
-            r = (v for k, v in self.items() if key.start <= t_s(k) and t_e(k) < key.stop)
+            r = (v for k, v in self.items()
+                 if key.start <= t_s(k) and t_e(k) < key.stop)
         elif key.start:
             t = ts(key.start.__class__)
             r = (v for k, v in self.items() if key.start <= t(k))

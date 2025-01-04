@@ -21,8 +21,8 @@ __author__ = 'sonntagsgesicht'
 __email__ = 'sonntagsgesicht@icloud.com'
 __url__ = 'https://github.com/sonntagsgesicht/tslist'
 
-__date__ = 'Tuesday, 19 November 2024'
-__version__ = '0.2'
+__date__ = 'Saturday, 04 January 2025'
+__version__ = '0.3'
 __dev_status__ = '3 - Alpha'  # '4 - Beta'  or '5 - Production/Stable'
 
 __dependencies__ = ()
