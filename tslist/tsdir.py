@@ -64,12 +64,12 @@ class TSDir:
 
         setup new storage directory
 
-        >>> d = TSDir('test/testdir', read_only=False)
+        >>> d = TSDir('TEST/TESTDIR', read_only=False)
 
         Create relative subdirectories by
 
-        >>> s1 = d.sub('subdir1')
-        >>> s2 = d.sub('subdir2')
+        >>> s1 = d.sub('SUBDIR1')
+        >>> s2 = d.sub('SUBDIR2')
 
         Add content
 
@@ -136,7 +136,7 @@ class TSDir:
 
     def _warn(self, *msg, sep=', ', end='\n'):
         if 2 < self.verbose:
-            raise Exception(msg)
+            raise OSError(msg)
         if 0 < self.verbose:
             print(*msg, sep=sep, end=end, file=sys.stderr)
 
@@ -304,14 +304,20 @@ class TSDir:
                 f.replace(nf)
             else:
                 f.rename(nf)
-        move(self._.absolute(), Path(target).absolute())
+        try:
+            move(self._.absolute(), Path(target).absolute())
+        except OSError as e:
+            return self._warn(str(e))
         return self.__class__(target, read_only=self.read_only)
 
     def remove(self, path=''):
         """removes (deletes) the directory"""
         if self.read_only:
             return self._warn(_NO_WRITER)
-        rmtree(self._.joinpath(path).absolute())
+        try:
+            rmtree(self._.joinpath(path).absolute())
+        except FileNotFoundError as e:
+            return self._warn(str(e))
 
     def tree(self, print=print, limit=1000):
         """prints a visual tree structure of the directory"""
