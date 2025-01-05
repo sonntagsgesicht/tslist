@@ -64,7 +64,7 @@ class TSDir:
 
         setup new storage directory
 
-        >>> d = TSDir('TEST/TESTDIR', read_only=False)
+        >>> d = TSDir('test/TESTDIR', read_only=False)
 
         Create relative subdirectories by
 
