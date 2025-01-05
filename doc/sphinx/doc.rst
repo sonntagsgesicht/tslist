@@ -9,24 +9,21 @@ API Documentation
 .. autoclass:: TSList
     :inherited-members:
 
-.. autoclass:: TSDict
-    :inherited-members:
 
-
-TS Class
-========
+more TS Classes
+===============
 
 .. autoclass:: TS
     :inherited-members:
 
-TSDiff Class
-============
-
 .. autoclass:: TSDiff
     :inherited-members:
 
-TSObject Class
-==============
+.. autoclass:: TSDict
+    :inherited-members:
+
+.. autoclass:: TSDir
+    :inherited-members:
 
 .. autoclass:: TSObject
     :inherited-members:

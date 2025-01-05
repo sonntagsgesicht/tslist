@@ -12,7 +12,7 @@
 
 from pprint import pformat
 
-from .tslist import ts, TSList
+from .tslist import TSList
 
 
 class TSDict(dict):
@@ -107,13 +107,14 @@ class TSDict(dict):
         super().__init__(iterable, **kwargs)
 
     def __getitem__(self, key):
-        if not isinstance(key, (int, slice)) and key in self:
-            return super().__getitem__(key)
-        keys = TSList(self.keys())[key]
-        if not isinstance(keys, list):
-            return super().__getitem__(keys)
-        items = {k: self[k] for k in keys}.items()
-        return self.__class__(items)
+        if isinstance(key, slice):
+            keys = TSList(self.keys())[key]
+            items = {k: self[k] for k in keys}.items()
+            return self.__class__(items)
+
+        if isinstance(key, int):
+            key = tuple(self.keys())[key]
+        return super().__getitem__(key)
 
     def __str__(self):
         return super().__str__()
@@ -126,41 +127,3 @@ class TSDict(dict):
             return s
         s = pformat(dict(self), indent=2, sort_dicts=False)
         return f"{c}(\n{s}\n)"
-
-    def _x__getitem__(self, key):
-        if isinstance(key, int):
-            key = tuple(self.keys())[key]
-            return super().__getitem__(key)
-
-        cls = self.__class__
-        if not isinstance(key, slice):
-            t = ts(key.__class__)
-            return cls(v for v in self if t(v) == key)
-
-        if isinstance(key.start, int) or isinstance(key.stop, int):
-            # use default slice behavior
-            return cls(super().__getitem__(key))
-
-        if key.start and key.stop:
-            t_s, t_e = ts(key.start.__class__), ts(key.stop.__class__)
-            r = (v for k, v in self.items()
-                 if key.start <= t_s(k) and t_e(k) < key.stop)
-        elif key.start:
-            t = ts(key.start.__class__)
-            r = (v for k, v in self.items() if key.start <= t(k))
-        elif key.stop:
-            t = ts(key.stop.__class__)
-            r = (v for k, v in self.items() if t(k) < key.stop)
-        else:
-            r = self.items()
-
-        if isinstance(key.step, int):
-            # gives TSList[start:stop:step] := TSList[start:stop][::step]
-            if key.step < 0:
-                return cls(r)[-1::key.step]
-            return cls(r)[0::key.step]
-        elif key.step:
-            cls = key.step.__class__.__name__
-            raise ValueError(f"slice steps of type {cls!r} do not work")
-
-        return cls(r)

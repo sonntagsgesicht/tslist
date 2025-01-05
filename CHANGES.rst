@@ -2,10 +2,18 @@
 These changes are listed in decreasing version number order.
 
 
+Release 0.3.1
+-------------
+
+Release date was |today|
+
+* added |TSDir|
+
+
 Release 0.3
 -----------
 
-Release date was |today|
+Release date was Saturday, 04 January 2025
 
 * added |TSDict|
 
