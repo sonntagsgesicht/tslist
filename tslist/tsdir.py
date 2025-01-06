@@ -149,6 +149,9 @@ class TSDir:
 
     # --- dict type attributes ---
 
+    def __len__(self):
+        return len(self.keys())
+
     def __iter__(self):
         return iter(self.keys())
 
@@ -170,18 +173,19 @@ class TSDir:
         j = dumps(value, indent=2, default=str)
         self._.joinpath(key).write_text(j)
 
-    # todo: add self[date] for datetime keys
-    # todo: add self[1:3:-1]
-    def __getitem__(self, key):
-        if isinstance(key, slice):
-            keys = self.keys()[key]
-            return TSDict({k: self[k] for k in keys}.items())
-
-        if isinstance(key, int):
-            key = self.keys()[key]
-
+    def _getitem(self, key):
         j = self._.joinpath(key).read_text()
         return loads(j)
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            key = tuple(self.keys())[key]
+
+        keys = self.keys()
+        if isinstance(key, slice) or key not in keys:
+            return TSDict({k: self._getitem(k) for k in keys[key]}.items())
+
+        return self._getitem(key)
 
     def __delitem__(self, key):
         if self.read_only:

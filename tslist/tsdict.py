@@ -106,15 +106,19 @@ class TSDict(dict):
         """  # noqa E501
         super().__init__(iterable, **kwargs)
 
-    def __getitem__(self, key):
-        if isinstance(key, slice):
-            keys = TSList(self.keys())[key]
-            items = {k: self[k] for k in keys}.items()
-            return self.__class__(items)
+    def _getitem(self, key):
+        return super().__getitem__(key)
 
+    def __getitem__(self, key):
         if isinstance(key, int):
             key = tuple(self.keys())[key]
-        return super().__getitem__(key)
+
+        keys = TSList(self.keys())
+        if isinstance(key, slice) or key not in keys:
+            items = {k: self._getitem(k) for k in keys[key]}.items()
+            return self.__class__(items)
+
+        return self._getitem(key)
 
     def __str__(self):
         return super().__str__()
