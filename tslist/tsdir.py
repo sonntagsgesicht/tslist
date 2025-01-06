@@ -1,22 +1,15 @@
 
 import os
 import sys
-import io
 from datetime import datetime
 from inspect import signature
-from itertools import islice
 from json import loads, dumps
 from pathlib import Path
 from shutil import rmtree, move
 
 from .tslist import TSList
 from .tsdict import TSDict
-
-
-try:
-    import pandas as pd
-except ImportError:
-    pd = None
+from .tree import tree
 
 
 NOW = None
@@ -68,8 +61,8 @@ class TSDir:
 
         Create relative subdirectories by
 
-        >>> s1 = d.sub('SUBDIR1')
-        >>> s2 = d.sub('SUBDIR2')
+        >>> s1 = d.subdir('SUBDIR1')
+        >>> s2 = d.subdir('SUBDIR2')
 
         Add content
 
@@ -103,11 +96,25 @@ class TSDir:
         ├─ SUBDIR1 [2024-12-25 ... 2024-12-26] (2)
         └─ SUBDIR2 [2024-12-24 ... 2024-12-31] (2)
 
+        Move the directory
+
+        >>> d = d.move('test/TESTDIR2')
+        >>> TSDir('test/TESTDIR').tree()
+        <BLANKLINE>
+
+        >>> d
+        TSDir('test/TESTDIR2')
+
+        >>> d.tree()
+        TESTDIR2
+        ├─ SUBDIR1 [2024-12-25 ... 2024-12-26] (2)
+        └─ SUBDIR2 [2024-12-24 ... 2024-12-31] (2)
+
         Remove subdir
 
         >>> d.remove('SUBDIR1')
         >>> d.tree()
-        TESTDIR
+        TESTDIR2
         └─ SUBDIR2 [2024-12-24 ... 2024-12-31] (2)
 
         Remove even the directory itself
@@ -163,6 +170,8 @@ class TSDir:
         j = dumps(value, indent=2, default=str)
         self._.joinpath(key).write_text(j)
 
+    # todo: add self[date] for datetime keys
+    # todo: add self[1:3:-1]
     def __getitem__(self, key):
         if isinstance(key, slice):
             keys = self.keys()[key]
@@ -204,10 +213,6 @@ class TSDir:
 
     def update(self, iterable=(), **kwargs):
         """(see `dict.update <https://docs.python.org/3/library/stdtypes.html#dict.update>`_)"""  # noqa E501
-        if pd and isinstance(iterable, pd.DataFrame):
-            iterable = {k: i.dropna().to_dict() for k, i in iterable.items()}
-        if pd and isinstance(iterable, pd.Series):
-            iterable = iterable.dropna(how='all').to_dict()
         if iterable and kwargs:
             raise ValueError('Only one of `iterable` and `kwargs` is allowed')
         kwargs.update(iterable)
@@ -252,7 +257,7 @@ class TSDir:
         return f"{cls}({str(self.path)!r})"
 
     def __call__(self, path=None, **kwargs):
-        return self.sub(path, **kwargs)
+        return self.subdir(path, **kwargs)
 
     def __getattr__(self, item):
         if not self._.joinpath('.' + item).exists():
@@ -271,11 +276,11 @@ class TSDir:
 
     # --- specific attributes ---
 
-    def sub(self, path, **kwargs):
+    def subdir(self, path=None, **kwargs):
         """opens subdirectory (and may create it)"""
-        if path == '*':
+        if path is None:
             args = (d.name for d in self._.iterdir() if d.is_dir())
-            return tuple(self.sub(arg, **kwargs) for arg in args)
+            return tuple(self.subdir(arg, **kwargs) for arg in args)
 
         cls = self.__class__
         kw = {k: getattr(self, k) for k in signature(self.__init__).parameters}
@@ -283,32 +288,16 @@ class TSDir:
         kw.pop('path', None)
         return cls(self._.joinpath(path), **kw)
 
-    def update_map(self, iterable, func=None, key='value'):
-        if func is None:
-            def func(x): return {key: x}
-        if pd and isinstance(iterable, (pd.DataFrame, pd.Series)):
-            iterable = iterable.dropna().map(func)
-        else:
-            iterable = {k: func(v) for k, v in iterable.items()}
-        self.update(iterable)
-
-    def move(self, target, replace=False):
+    def move(self, target):
         """moves the directory to another path"""
         if self.read_only:
             return self._warn(_NO_WRITER)
-        for f in self._.iterdir():
-            nf = Path(target).joinpath(f.name)
-            if f.is_dir():
-                f.move(nf, replace=replace)
-            elif replace:
-                f.replace(nf)
-            else:
-                f.rename(nf)
         try:
             move(self._.absolute(), Path(target).absolute())
         except OSError as e:
             return self._warn(str(e))
-        return self.__class__(target, read_only=self.read_only)
+        return self.__class__(target,
+                              read_only=self.read_only, verbose=self.verbose)
 
     def remove(self, path=''):
         """removes (deletes) the directory"""
@@ -319,53 +308,7 @@ class TSDir:
         except FileNotFoundError as e:
             return self._warn(str(e))
 
-    def tree(self, print=print, limit=1000):
+    def tree(self, print=print):
         """prints a visual tree structure of the directory"""
-        space = '   '
-        branch = '│  '
-        tee = '├─ '
-        last = '└─ '
-
-        directories = files = 0
-
-        def inner(dir_path: Path, prefix='', level=-1):
-            nonlocal directories, files
-            if not level:
-                return  # 0, stop iterating
-            contents = [d for d in dir_path.iterdir() if d.is_dir()]
-            contents.sort(key=lambda x: x.name)
-            max_name = max([len(d.name) for d in contents], default=0)
-            pointers = [tee] * (len(contents) - 1) + [last]
-            for pointer, path in zip(pointers, contents):
-                if path.is_dir():
-                    items = [d.name for d in path.iterdir()
-                             if not d.is_dir() and not d.name.startswith('.')]
-                    if items:
-                        files += len(items)
-                        yield (prefix
-                               + pointer
-                               + path.name.upper().ljust(max_name)
-                               + f" [{min(items)} ... {max(items)}] "
-                                 f"({len(items)})")
-                    else:
-                        yield prefix + pointer + path.name.upper()
-                    directories += 1
-                    extension = branch if pointer == tee else space
-                    yield from inner(path, prefix=prefix+extension, level=level-1)  # noqa E501
-
-        s = ''
-        if self._.exists():
-            iterator = inner(self._)
-            s = [self._.name.upper()] + list(islice(iterator, limit))
-            if next(iterator, None):
-                s.append(f'... length_limit, {limit}, reached')
-            s = os.linesep.join(s)
+        s = tree(self._)
         return print(s) if print else s
-
-    def df(self, **kwargs):
-        """returns items as pandas dataframe (if installed)"""
-        if not pd:
-            raise ImportError('pandas is not installed but required')
-        j = io.StringIO(dumps(self[:], sort_keys=False))
-        df = pd.read_json(j, **kwargs).T
-        return df
