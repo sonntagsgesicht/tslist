@@ -4,12 +4,23 @@ import itertools
 
 from pathlib import Path
 
+from .parser import parse_datetime
+
+def gap(lst):
+    lst = sorted(lst)
+    d = {ts: (parse_datetime(prev) - parse_datetime(ts)).days
+         for ts, prev in zip(lst, lst[1:])}
+    d = dict(sorted(d.items(), key=lambda x: x[1]))
+    return tuple(d.items())[-1] if d else ('', 0)
+
 
 def _summary(dir_path: Path):
     items = [d.name for d in dir_path.iterdir()
              if not d.is_dir() and not d.name.startswith('.')]
     if not items:
         return ""
+    # g_day, g_days = gap(items)
+    # gap_items = f" missing {g_days} days at most on {g_day}"
     return f" [{min(items)} ... {max(items)}] ({len(items)})"
 
 
