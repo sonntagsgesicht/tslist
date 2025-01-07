@@ -29,7 +29,7 @@ class TSDir:
     @classmethod
     def from_home(cls, path, *, read_only=True, verbose=1):
         """open the directory relative to *home* directory"""
-        return cls(Path.home().joinpath(path), read_only=read_only, verbose=verbose)  # noqa E501
+        return cls(Path.home().joinpath(str(path)), read_only=read_only, verbose=verbose)  # noqa E501
 
     @property
     def name(self):
@@ -61,8 +61,8 @@ class TSDir:
 
         Create relative subdirectories by
 
-        >>> s1 = d.subdir('SUBDIR1')
-        >>> s2 = d.subdir('SUBDIR2')
+        >>> s1 = d('SUBDIR1')
+        >>> s2 = d('SUBDIR2')
 
         Add content
 
@@ -158,6 +158,9 @@ class TSDir:
     def __contains__(self, item):
         return item in self.keys()
 
+    def __bool__(self):
+        return bool(self.keys())
+
     def __setitem__(self, key, value):
         if self.read_only:
             return self._warn(_NO_WRITER)
@@ -171,10 +174,10 @@ class TSDir:
             key = self.keys()[key]
 
         j = dumps(value, indent=2, default=str)
-        self._.joinpath(key).write_text(j)
+        self._.joinpath(str(key)).write_text(j)
 
     def _getitem(self, key):
-        j = self._.joinpath(key).read_text()
+        j = self._.joinpath(str(key)).read_text()
         return loads(j)
 
     def __getitem__(self, key):
@@ -197,7 +200,7 @@ class TSDir:
         if isinstance(key, int):
             key = self.keys()[key]
 
-        fn = self._.joinpath(key).absolute()
+        fn = self._.joinpath(str(key)).absolute()
         if os.path.exists(fn):
             os.remove(fn)
 
@@ -261,12 +264,15 @@ class TSDir:
         return f"{cls}({str(self.path)!r})"
 
     def __call__(self, path=None, **kwargs):
-        return self.subdir(path, **kwargs)
+        kw = {k: getattr(self, k) for k in signature(self.__init__).parameters}
+        kw.update(kwargs)
+        kw.pop('path', None)
+        return self.__class__(self._.joinpath(str(path)), **kw)
 
     def __getattr__(self, item):
         if not self._.joinpath('.' + item).exists():
             raise AttributeError(item)
-        return self['.' + item]
+        return self._getitem('.' + item)
 
     def __setattr__(self, key, value):
         slots = tuple(signature(self.__init__).parameters)
@@ -280,17 +286,10 @@ class TSDir:
 
     # --- specific attributes ---
 
-    def subdir(self, path=None, **kwargs):
+    def subdir(self, **kwargs):
         """opens subdirectory (and may create it)"""
-        if path is None:
-            args = (d.name for d in self._.iterdir() if d.is_dir())
-            return tuple(self.subdir(arg, **kwargs) for arg in args)
-
-        cls = self.__class__
-        kw = {k: getattr(self, k) for k in signature(self.__init__).parameters}
-        kw.update(kwargs)
-        kw.pop('path', None)
-        return cls(self._.joinpath(path), **kw)
+        args = (d.name for d in self._.iterdir() if d.is_dir())
+        return tuple(self(arg, **kwargs) for arg in args)
 
     def move(self, target):
         """moves the directory to another path"""
@@ -308,7 +307,7 @@ class TSDir:
         if self.read_only:
             return self._warn(_NO_WRITER)
         try:
-            rmtree(self._.joinpath(path).absolute())
+            rmtree(self._.joinpath(str(path)).absolute())
         except FileNotFoundError as e:
             return self._warn(str(e))
 
