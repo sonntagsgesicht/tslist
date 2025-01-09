@@ -93,8 +93,8 @@ class TSDir:
 
         >>> d.tree()
         TESTDIR
-        ├─ SUBDIR1 [2024-12-25 ... 2024-12-26] (2)
-        └─ SUBDIR2 [2024-12-24 ... 2024-12-31] (2)
+        ├─ SUBDIR1 [2024-12-25 ... 2024-12-26] [2]
+        └─ SUBDIR2 [2024-12-24 ... 2024-12-31] [2]
 
         Move the directory
 
@@ -107,15 +107,15 @@ class TSDir:
 
         >>> d.tree()
         TESTDIR2
-        ├─ SUBDIR1 [2024-12-25 ... 2024-12-26] (2)
-        └─ SUBDIR2 [2024-12-24 ... 2024-12-31] (2)
+        ├─ SUBDIR1 [2024-12-25 ... 2024-12-26] [2]
+        └─ SUBDIR2 [2024-12-24 ... 2024-12-31] [2]
 
         Remove subdir
 
         >>> d.remove('SUBDIR1')
         >>> d.tree()
         TESTDIR2
-        └─ SUBDIR2 [2024-12-24 ... 2024-12-31] (2)
+        └─ SUBDIR2 [2024-12-24 ... 2024-12-31] [2]
 
         Remove even the directory itself
 
@@ -311,7 +311,7 @@ class TSDir:
         except FileNotFoundError as e:
             return self._warn(str(e))
 
-    def tree(self, print=print):
+    def tree(self, *func, print=print):
         """prints a visual tree structure of the directory"""
-        s = tree(self._)
+        s = tree(self._, *func)
         return print(s) if print else s
