@@ -159,6 +159,8 @@ class TSDir:
         return item in self.keys()
 
     def __bool__(self):
+        if not self._.exists():
+            return False
         return bool(self.keys())
 
     def __setitem__(self, key, value):
