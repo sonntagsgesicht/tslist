@@ -131,3 +131,6 @@ class TSDict(dict):
             return s
         s = pformat(dict(self), indent=2, sort_dicts=False)
         return f"{c}(\n{s}\n)"
+
+    def astype(self, dtype):
+        return self.__class__((k, dtype(v)) for k, v in self.items())

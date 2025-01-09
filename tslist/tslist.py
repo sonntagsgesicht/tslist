@@ -159,3 +159,6 @@ class TSList(list):
             return s
         s = pformat(list(self), indent=2, sort_dicts=False)
         return f"{c}(\n{s}\n)"
+
+    def astype(self, dtype):
+        return self.__class__(map(dtype, self))

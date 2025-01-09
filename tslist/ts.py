@@ -15,6 +15,7 @@ from warnings import warn
 
 from .parser import parse_datetime
 from .tsdiff import TSDiff
+from .tslist import TSList
 
 
 class TS(datetime):
@@ -24,6 +25,10 @@ class TS(datetime):
     _WARN = False
     DEFAULT = None
     """default datetime for |TS()|; if 'None' |TS()| returns current date and time"""  # noqa F401
+
+    @classmethod
+    def map(cls, iterable):
+        return TSList(map(cls, iterable))
 
     def __new__(cls,
                 year: date | datetime | str | int | float | object | None = None,  # noqa E501
