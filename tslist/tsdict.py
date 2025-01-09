@@ -133,4 +133,4 @@ class TSDict(dict):
         return f"{c}(\n{s}\n)"
 
     def astype(self, dtype):
-        return self.__class__((k, dtype(v)) for k, v in self.items())
+        return self.__class__((k, dtype(*v)) for k, v in self.items())
