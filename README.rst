@@ -1,5 +1,7 @@
 
 .. image:: logo.png
+   :height: 100px
+   :width: 100px
 
 
 Python Project *tslist*
