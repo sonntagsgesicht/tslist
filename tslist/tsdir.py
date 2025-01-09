@@ -50,8 +50,9 @@ class TSDir:
             (optional; default is **True**)
         :param verbose: set level of verbosity. A value of
             *0* will be silent (no logging),
-            *1* (default) will warn on errors and
-            *2* will raise exceptions
+            *1* (default) will warn on errors to stderr but no info and
+            *2* prints info messsages to stdout
+            *3* will also raise exceptions on warnings
 
         >>> from tslist import TSDir
 
