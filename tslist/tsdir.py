@@ -125,6 +125,8 @@ class TSDir:
         <BLANKLINE>
 
         """
+        if isinstance(path, TSDir):
+            path = path.path
         _ = Path(path)
         if _.exists() and not _.is_dir():
             raise OSError(f"{_.absolute()} not a directory")
@@ -135,6 +137,7 @@ class TSDir:
 
         if not _.exists() and not self.read_only:
             self._.mkdir()
+            self._log(f"added {self.name}")
 
     def _log(self, msg=''):
         if 79 < len(msg):
@@ -178,6 +181,7 @@ class TSDir:
 
         j = dumps(value, indent=2, default=str)
         self._.joinpath(str(key)).write_text(j)
+        self._log(f"added {self.name}[{key}] = {str(value)[:16]}")
 
     def _getitem(self, key):
         j = self._.joinpath(str(key)).read_text()
@@ -206,6 +210,7 @@ class TSDir:
         fn = self._.joinpath(str(key)).absolute()
         if os.path.exists(fn):
             os.remove(fn)
+            self._log(f"removed {self.name}[{key}]")
 
     def keys(self):
         """(see `dict.keys <https://docs.python.org/3/library/stdtypes.html#dict.keys>`_)"""  # noqa E501
@@ -300,6 +305,7 @@ class TSDir:
             return self._warn(_NO_WRITER)
         try:
             move(self._.absolute(), Path(target).absolute())
+            self._log(f"moved {self.name} to {target}")
         except OSError as e:
             return self._warn(str(e))
         return self.__class__(target,
@@ -311,6 +317,7 @@ class TSDir:
             return self._warn(_NO_WRITER)
         try:
             rmtree(self._.joinpath(str(path)).absolute())
+            self._log(f"removed {self.name}")
         except FileNotFoundError as e:
             return self._warn(str(e))
 
