@@ -152,6 +152,7 @@ def parse_timedelta(
     if p:
         raise ValueError(f"Unable to parse {p!r}")
     m = float(m) + 3 * float(q) + 12 * float(y)
+    d = float(d) + 7 * float(w)
     s = (float(h) * 60 + float(i)) * 60 + float(s)
     if m:
         if not with_months:
