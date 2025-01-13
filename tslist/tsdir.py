@@ -21,15 +21,9 @@ logger = print
 class TSDir:
 
     @classmethod
-    def from_cwd(cls, cwd, *, read_only=True, verbose=1):
-        """change working directory to 'cwd' and open the directory"""
-        os.chdir(str(cwd))
-        return cls('', read_only=read_only, verbose=verbose)
-
-    @classmethod
-    def from_home(cls, path, *, read_only=True, verbose=1):
+    def from_home(cls, path='', *, read_only=True, verbose=1, cwd=''):
         """open the directory relative to *home* directory"""
-        return cls(Path.home().joinpath(str(path)), read_only=read_only, verbose=verbose)  # noqa E501
+        return cls(Path.home().joinpath(str(path)), read_only=read_only, verbose=verbose, cwd=cwd)  # noqa E501
 
     @property
     def name(self):
@@ -41,7 +35,13 @@ class TSDir:
         """`pathlib.Path` object to the directory"""
         return self._
 
-    def __init__(self, path: Path | str, *, read_only=True, verbose=1):
+    @property
+    def cwd(self):
+        """current working directory"""
+        return self._.cwd()
+
+    def __init__(self, path: Path | str = '', *,
+                 read_only=True, verbose=1, cwd=''):
         """TS directory that behaves like a |TSDict|
 
         :param path: root of directory
@@ -53,6 +53,7 @@ class TSDir:
             *1* (default) will warn on errors to stderr but no info and
             *2* prints info messsages to stdout
             *3* will also raise exceptions on warnings
+        :param cwd: working directory
 
         >>> from tslist import TSDir
 
@@ -125,6 +126,10 @@ class TSDir:
         <BLANKLINE>
 
         """
+        if cwd:
+            os.chdir(str(cwd))
+        if not path:
+            path = os.getenv('TS_DIR', '')
         if isinstance(path, TSDir):
             path = path.path
         _ = Path(path)
