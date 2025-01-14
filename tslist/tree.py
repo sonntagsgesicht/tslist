@@ -57,16 +57,17 @@ def _iter(dir_path: Path, *func, prefix='', level=-1):
 
     if level == 0:
         return  # stop iterating
-    contents = [d for d in dir_path.iterdir() if d.is_dir()]
+    contents = [d for d in dir_path.iterdir()
+                if d.is_dir() and not d.name.startswith('.')]
     contents.sort(key=lambda x: x.name)
     max_name = max([len(d.name) for d in contents], default=0)
     pointers = [tee] * (len(contents) - 1) + [last]
     for pointer, path in zip(pointers, contents):
-        if path.is_dir():
-            yield prefix + pointer + path.name.upper().ljust \
-                (max_name) + _summary(path, *func)  # noqa E501
-            extension = branch if pointer == tee else space
-            yield from _iter(path, *func, prefix=prefix + extension, level=level -1)  # noqa E501
+        yield (prefix + pointer + path.name.upper().ljust(max_name) +
+               _summary(path, *func))
+        extension = branch if pointer == tee else space
+        yield from _iter(path, *func,
+                         prefix=prefix + extension, level=level - 1)
 
 
 def tree(dir_path: Path, *func, limit=1000):
