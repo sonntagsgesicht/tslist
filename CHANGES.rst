@@ -2,7 +2,7 @@
 These changes are listed in decreasing version number order.
 
 
-Release 0.3.3
+Release 0.3.4
 -------------
 
 Release date was |today|

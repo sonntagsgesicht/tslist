@@ -22,7 +22,7 @@ __email__ = 'sonntagsgesicht@icloud.com'
 __url__ = 'https://github.com/sonntagsgesicht/tslist'
 
 __date__ = 'Monday, 20 January 2025'
-__version__ = '0.3.3'
+__version__ = '0.3.4'
 __dev_status__ = '3 - Alpha'  # '4 - Beta'  or '5 - Production/Stable'
 
 __dependencies__ = ()
