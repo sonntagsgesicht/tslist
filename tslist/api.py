@@ -4,7 +4,7 @@ from urllib.parse import unquote_plus
 from .tsdir import TSDir
 
 
-def api(tsdir: TSDir, *tokens):
+def api(tsdir: TSDir='.', *tokens):
     try:
         from flask import Flask, make_response, request
     except ImportError:
@@ -28,7 +28,12 @@ def api(tsdir: TSDir, *tokens):
 
         item = request.args.get('item', request.args.get('date'))
         if item is not None:
-            item = unquote_plus(item) if item else item
+            if item.startswith('-'):
+                item = -int(item[1:])
+            elif item.isdigit():
+                item = int(item)
+            else:
+                item = unquote_plus(item)
             return tbl[item]
 
         start = request.args.get('start')

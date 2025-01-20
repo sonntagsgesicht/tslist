@@ -96,7 +96,7 @@ class TSClient:
         except ImportError:
             raise ImportError("'client' requires 'requests' to be installed. "
                               "Consider 'pip install requests'")
-        kwargs = {k: quote_plus(v)
+        kwargs = {k: v if isinstance(v, int) else quote_plus(v)
                   for k, v in kwargs.items() if v is not None}
         if self.token:
             kwargs['token'] = kwargs.get('token', self.token)
