@@ -301,7 +301,8 @@ class TSDir:
 
     def subdir(self, **kwargs):
         """opens subdirectory (and may create it)"""
-        args = (d.name for d in self._.iterdir() if d.is_dir())
+        args = (d.name for d in self._.iterdir()
+                if d.is_dir() and not d.name.startswith('.'))
         return tuple(self(arg, **kwargs) for arg in args)
 
     def move(self, target):
