@@ -4,7 +4,7 @@ from urllib.parse import unquote_plus
 from .tsdir import TSDir
 
 
-def api(tsdir: TSDir='.', *tokens):
+def api(tsdir: TSDir = '.', *tokens):
     try:
         from flask import Flask, make_response, request
     except ImportError:
