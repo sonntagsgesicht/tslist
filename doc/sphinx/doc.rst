@@ -25,6 +25,9 @@ more TS Classes
 .. autoclass:: TSDir
     :inherited-members:
 
+.. autoclass:: TSClient
+    :inherited-members:
+
 .. autoclass:: TSObject
     :inherited-members:
 

@@ -2,10 +2,19 @@
 These changes are listed in decreasing version number order.
 
 
-Release 0.3.2
+Release 0.3.3
 -------------
 
 Release date was |today|
+
+* added |TSClient| and remote |TSDir| like
+    `flask <https://flask.palletsprojects.com/en/stable/>`_ app
+
+
+Release 0.3.2
+-------------
+
+Release date was Thursday, 09 January 2025
 
 * added |TSDir|
 

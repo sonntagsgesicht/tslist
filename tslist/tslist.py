@@ -116,6 +116,9 @@ class TSList(list):
         if isinstance(key, int):
             return super().__getitem__(key)
 
+        if isinstance(key, tuple):
+            return tuple(super().__getitem__(k) for k in key)
+
         cls = self.__class__
         if not isinstance(key, slice):
             t = ts(key.__class__)

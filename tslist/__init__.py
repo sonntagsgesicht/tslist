@@ -21,8 +21,8 @@ __author__ = 'sonntagsgesicht'
 __email__ = 'sonntagsgesicht@icloud.com'
 __url__ = 'https://github.com/sonntagsgesicht/tslist'
 
-__date__ = 'Thursday, 09 January 2025'
-__version__ = '0.3.2'
+__date__ = 'Monday, 20 January 2025'
+__version__ = '0.3.3'
 __dev_status__ = '3 - Alpha'  # '4 - Beta'  or '5 - Production/Stable'
 
 __dependencies__ = ()
@@ -44,3 +44,5 @@ from .tsobj import TSObject  # noqa F401 E402
 from .tslist import TSList  # noqa F401 E402
 from .tsdict import TSDict  # noqa F401 E402
 from .tsdir import TSDir, NOW  # noqa F401 E402
+from .api import api  # noqa F401 E402
+from .tsclient import TSClient  # noqa F401 E402

@@ -326,7 +326,7 @@ class TSDir:
         except FileNotFoundError as e:
             return self._warn(str(e))
 
-    def tree(self, *func, print=print):
+    def tree(self, *func, print=print, limit=1_000):
         """prints a visual tree structure of the directory"""
-        s = tree(self._, *func)
+        s = tree(self._, *func, limit=limit)
         return print(s) if print else s
